@@ -55,8 +55,7 @@ grails.project.dependency.resolution = {
 
         compile ':cache:1.0.1'
 
-        // PORTAL-GRAILS TODO ensure these are the latest version of our plugins
-        compile ":portal-app:1.1.2"
-        compile ":bv-common:1.0.6"
+        compile ":portal-app:1.1.4"
+        compile ":bv-common:1.0.10"
     }
 }
