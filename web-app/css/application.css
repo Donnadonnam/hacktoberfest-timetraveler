@@ -19,6 +19,8 @@ text {
 
 .label {
     fill: #777;
+    font-weight: normal;
+    text-shadow: none;
 }
 
 .year.label {
