@@ -101,7 +101,7 @@ grails.plugins.springsecurity.portMapper.httpsPort = 443
 environments {
     development {
         grails.logging.jul.usebridge = true
-        grails.serverURL = "https://sample.portal.bazaarvoice.com:" + httpsPort
+        grails.serverURL = "https://timetraveler.portal.bazaarvoice.com:" + httpsPort
 
         // disable the "X-Forwarded-Proto" in development since there's no load balancer
         grails.plugins.springsecurity.secureChannel.useHeaderCheckChannelSecurity = false
