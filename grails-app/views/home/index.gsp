@@ -12,10 +12,10 @@
 
     <r:script>
         // Various accessors that specify the four dimensions of data to visualize.
-        function x(d) { return d.income; }
-        function y(d) { return d.lifeExpectancy; }
-        function radius(d) { return d.population; }
-        function color(d) { return d.region; }
+        function x(d) { return d.impressions; }
+        function y(d) { return d.conversions; }
+        function radius(d) { return d.volume; }
+        function color(d) { return d.brand; }
         function key(d) { return d.name; }
 
         // Chart dimensions.
@@ -57,7 +57,7 @@
                 .attr("text-anchor", "end")
                 .attr("x", width)
                 .attr("y", height - 6)
-                .text("income per capita, inflation-adjusted (dollars)");
+                .text("impressions");
 
         // Add a y-axis label.
         svg.append("text")
@@ -66,7 +66,7 @@
                 .attr("y", 6)
                 .attr("dy", ".75em")
                 .attr("transform", "rotate(-90)")
-                .text("life expectancy (years)");
+                .text("conversions");
 
         // Add the year label; the value is set on transition.
         var label = svg.append("text")
@@ -174,10 +174,10 @@
                 return nations.map(function(d) {
                     return {
                         name: d.name,
-                        region: d.region,
-                        income: interpolateValues(d.income, year),
-                        population: interpolateValues(d.population, year),
-                        lifeExpectancy: interpolateValues(d.lifeExpectancy, year)
+                        brand: d.brand,
+                        impressions: interpolateValues(d.impressions, year),
+                        volume: interpolateValues(d.volume, year),
+                        conversions: interpolateValues(d.conversions, year)
                     };
                 });
             }
