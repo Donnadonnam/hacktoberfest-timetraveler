@@ -18,6 +18,9 @@
         function color(d) { return d.brand; }
         function key(d) { return d.name; }
 
+        var minMonthYear = 1800;
+        var maxMonthYear = 2009;
+
         // Chart dimensions.
         var margin = {top: 19.5, right: 19.5, bottom: 19.5, left: 39.5},
                 width = 960 - margin.right,
@@ -68,13 +71,13 @@
                 .attr("transform", "rotate(-90)")
                 .text("conversions");
 
-        // Add the year label; the value is set on transition.
+        // Add the monthYear label; the value is set on transition.
         var label = svg.append("text")
-                .attr("class", "year label")
+                .attr("class", "monthYear label")
                 .attr("text-anchor", "end")
                 .attr("y", height - 24)
                 .attr("x", width)
-                .text(1800);
+                .text(minMonthYear);
 
         // Load the data.
         d3.json("js/nations.json", function(nations) {
@@ -82,11 +85,11 @@
             // A bisector since many nation's data is sparsely-defined.
             var bisect = d3.bisector(function(d) { return d[0]; });
 
-            // Add a dot per nation. Initialize the data at 1800, and set the colors.
+            // Add a dot per nation. Initialize the data at minMonthYear, and set the colors.
             var dot = svg.append("g")
                     .attr("class", "dots")
                     .selectAll(".dot")
-                    .data(interpolateData(1800))
+                    .data(interpolateData(minMonthYear))
                     .enter().append("circle")
                     .attr("class", "dot")
                     .style("fill", function(d) { return colorScale(color(d)); })
@@ -97,7 +100,7 @@
             dot.append("title")
                     .text(function(d) { return d.name; });
 
-            // Add an overlay for the year label.
+            // Add an overlay for the monthYear label.
             var box = label.node().getBBox();
 
             var overlay = svg.append("rect")
@@ -108,11 +111,11 @@
                     .attr("height", box.height)
                     .on("mouseover", enableInteraction);
 
-            // Start a transition that interpolates the data based on year.
+            // Start a transition that interpolates the data based on monthYear.
             svg.transition()
                     .duration(30000)
                     .ease("linear")
-                    .tween("year", tweenYear)
+                    .tween("monthYear", tweenYear)
                     .each("end", enableInteraction);
 
             // Positions the dots based on data.
@@ -127,10 +130,10 @@
                 return radius(b) - radius(a);
             }
 
-            // After the transition finishes, you can mouseover to change the year.
+            // After the transition finishes, you can mouseover to change the monthYear.
             function enableInteraction() {
-                var yearScale = d3.scale.linear()
-                        .domain([1800, 2009])
+                var monthYearScale = d3.scale.linear()
+                        .domain([minMonthYear, maxMonthYear])
                         .range([box.x + 10, box.x + box.width - 10])
                         .clamp(true);
 
@@ -152,43 +155,45 @@
                 }
 
                 function mousemove() {
-                    displayYear(yearScale.invert(d3.mouse(this)[0]));
+                    displayMonthYear(monthYearScale.invert(d3.mouse(this)[0]));
                 }
             }
 
-            // Tweens the entire chart by first tweening the year, and then the data.
+            // Tweens the entire chart by first tweening the monthYear, and then the data.
             // For the interpolated data, the dots and label are redrawn.
             function tweenYear() {
-                var year = d3.interpolateNumber(1800, 2009);
-                return function(t) { displayYear(year(t)); };
+                var monthYear = d3.interpolateNumber(minMonthYear, maxMonthYear);
+                return function(t) {
+                    displayMonthYear(monthYear(t));
+                };
             }
 
-            // Updates the display to show the specified year.
-            function displayYear(year) {
-                dot.data(interpolateData(year), key).call(position).sort(order);
-                label.text(Math.round(year));
+            // Updates the display to show the specified monthYear.
+            function displayMonthYear(monthYear) {
+                dot.data(interpolateData(monthYear), key).call(position).sort(order);
+                label.text(Math.round(monthYear));
             }
 
-            // Interpolates the dataset for the given (fractional) year.
-            function interpolateData(year) {
+            // Interpolates the dataset for the given (fractional) monthYear.
+            function interpolateData(monthYear) {
                 return nations.map(function(d) {
                     return {
                         name: d.name,
                         brand: d.brand,
-                        pageviews: interpolateValues(d.pageviews, year),
-                        volume: interpolateValues(d.volume, year),
-                        conversions: interpolateValues(d.conversions, year)
+                        pageviews: interpolateValues(d.pageviews, monthYear),
+                        volume: interpolateValues(d.volume, monthYear),
+                        conversions: interpolateValues(d.conversions, monthYear)
                     };
                 });
             }
 
-            // Finds (and possibly interpolates) the value for the specified year.
-            function interpolateValues(values, year) {
-                var i = bisect.left(values, year, 0, values.length - 1),
+            // Finds (and possibly interpolates) the value for the specified monthYear.
+            function interpolateValues(values, monthYear) {
+                var i = bisect.left(values, monthYear, 0, values.length - 1),
                         a = values[i];
                 if (i > 0) {
                     var b = values[i - 1],
-                            t = (year - a[0]) / (b[0] - a[0]);
+                            t = (monthYear - a[0]) / (b[0] - a[0]);
                     return a[1] * (1 - t) + b[1] * t;
                 }
                 return a[1];

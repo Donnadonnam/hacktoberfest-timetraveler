@@ -23,12 +23,12 @@ text {
     text-shadow: none;
 }
 
-.year.label {
+.monthYear.label {
     font: 500 196px "Helvetica Neue";
     fill: #ddd;
 }
 
-.year.label.active {
+.monthYear.label.active {
     fill: #aaa;
 }
 
