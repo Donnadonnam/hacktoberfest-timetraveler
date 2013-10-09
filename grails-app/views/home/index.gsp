@@ -12,7 +12,7 @@
 
     <r:script>
         // Various accessors that specify the four dimensions of data to visualize.
-        function x(d) { return d.impressions; }
+        function x(d) { return d.pageviews; }
         function y(d) { return d.conversions; }
         function radius(d) { return d.volume; }
         function color(d) { return d.brand; }
@@ -57,7 +57,7 @@
                 .attr("text-anchor", "end")
                 .attr("x", width)
                 .attr("y", height - 6)
-                .text("impressions");
+                .text("page views");
 
         // Add a y-axis label.
         svg.append("text")
@@ -175,7 +175,7 @@
                     return {
                         name: d.name,
                         brand: d.brand,
-                        impressions: interpolateValues(d.impressions, year),
+                        pageviews: interpolateValues(d.pageviews, year),
                         volume: interpolateValues(d.volume, year),
                         conversions: interpolateValues(d.conversions, year)
                     };
