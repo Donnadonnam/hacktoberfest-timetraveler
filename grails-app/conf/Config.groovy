@@ -152,3 +152,6 @@ log4j = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 }
+
+// Portal-app (at least as of 1.1.4; maybe earlier) requires this
+grails.plugins.portalapp.usePortalNav = true
