@@ -10,6 +10,13 @@
 
     <p id="chart"></p>
 
+    <aside>Mouse over the date to move forward and backwards through time.</aside>
+
+    <p>
+        This chart shows the fluctuation in page views (x), conversions (y) and review volume (radius) of Petsmart
+        products over 2013. Products are colored by brand; mouse over to read their names.
+    </p>
+
     <r:script>
         // Various accessors that specify the four dimensions of data to visualize.
         function x(d) { return d.pageviews; }
