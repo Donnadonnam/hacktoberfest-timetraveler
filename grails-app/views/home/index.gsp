@@ -8,8 +8,26 @@
 <body>
     <h1>Time Traveler</h1>
 
-    <%-- For Verizon product external ID 5971 --%>
-    <div id="chart_div"></div>
+    <%-- For Verizon product external ID 5947 --%>
+    <div class="container row-fluid">
+        <div class="product-details span4">
+            <div class="product-image ">
+                <r:img dir="images" file="5947.jpg" width="198" height="400" alt="${g.message(code:'product.name')}"/>
+            </div>
+            <h4 class="product-name"><g:message code="product.name"/></h4>
+            <dl class="legend">
+                <dt><span class="circle vol"></span> Volume</dt>
+                    <dd>total reviews in the past 30 days</dd>
+                <dt><span class="circle roi"></span> ROI</dt>
+                    <dd>conversion rate (orders / unique visitors)</dd>
+                <dt><span class="circle rvv"></span> RvV</dt>
+                    <dd>ROI % change - Volume % change</dd>
+            </dl>
+        </div>
+
+        <div id="chart_div" class="span8"></div>
+    </div>
+
 
     <r:script>
         google.load('visualization', '1', {'packages':['motionchart']});
@@ -18,35 +36,35 @@
             var data = new google.visualization.DataTable();
             data.addColumn('string', 'Metric');
             data.addColumn('date', 'Date');
-            data.addColumn('number', 'Change');
+            data.addColumn('number', '% change');
             data.addRows([
-                ['Volume', new Date (2013,8,7), 3],
-                ['ROI',    new Date (2013,8,7), 5],
-                ['RvV',    new Date (2013,8,7), 2],
+                //['Volume', new Date (2013,8,24), 26],
+                //['ROI',    new Date (2013,8,24), 4],
+                //['RvV',    new Date (2013,8,24), 2],
 
-                ['Volume', new Date (2013,8,2), 0],
-                ['ROI',    new Date (2013,8,2), 1],
-                ['RvV',    new Date (2013,8,2), 1],
+                ['Volume', new Date (2013,8,25), -4],
+                ['ROI',    new Date (2013,8,25), -8],
+                ['RvV',    new Date (2013,8,25), -4],
 
-                ['Volume', new Date (2013,8,1), 0],
-                ['ROI',    new Date (2013,8,1), 2],
-                ['RvV',    new Date (2013,8,1), 2],
+                ['Volume', new Date (2013,8,26), -4],
+                ['ROI',    new Date (2013,8,26), -8],
+                ['RvV',    new Date (2013,8,26), -4],
 
-                ['Volume', new Date (2013,8,3), 0.00044903457566],
-                ['ROI',    new Date (2013,8,3), 5],
-                ['RvV',    new Date (2013,8,3), 2],
+                ['Volume', new Date (2013,8,27), 0],
+                ['ROI',    new Date (2013,8,27), 22],
+                ['RvV',    new Date (2013,8,27), 22],
 
-                ['Volume', new Date (2013,8,4), 3],
-                ['ROI',    new Date (2013,8,4), 5],
-                ['RvV',    new Date (2013,8,4), 2],
+                ['Volume', new Date (2013,8,28), -13],
+                ['ROI',    new Date (2013,8,28), 30],
+                ['RvV',    new Date (2013,8,28), 42],
 
-                ['Volume', new Date (2013,8,5), 3],
-                ['ROI',    new Date (2013,8,5), 5],
-                ['RvV',    new Date (2013,8,5), 2],
+                ['Volume', new Date (2013,8,29), 0],
+                ['ROI',    new Date (2013,8,29), -11],
+                ['RvV',    new Date (2013,8,29), -11],
 
-                ['Volume', new Date (2013,8,6), 3],
-                ['ROI',    new Date (2013,8,6), 5],
-                ['RvV',    new Date (2013,8,6), 2]
+                ['Volume', new Date (2013,8,30), 0],
+                ['ROI',    new Date (2013,8,30), -20],
+                ['RvV',    new Date (2013,8,30), -20]
 
             ]);
             var chart = new google.visualization.MotionChart(document.getElementById('chart_div'));
@@ -56,7 +74,7 @@
             options['showXMetricPicker'] = false;
             options['showYMetricPicker'] = false;
             options['state'] = '{"showTrails":true,"uniColorForNonSelected":false,"colorOption":"_UNIQUE_COLOR",' +
-                    '"xZoomedIn":false,"time":"2013-09-01","playDuration":5000,"sizeOption":"_UNISIZE",' +
+                    '"xZoomedIn":false,"time":"2013-09-25","playDuration":5000,"sizeOption":"_UNISIZE",' +
                     '"duration":{"timeUnit":"D","multiplier":1},"xZoomedDataMin":1375315200000,' +
                     '"orderedByY":false,"xZoomedDataMax":1375401600000,"iconType":"BUBBLE","nonSelectedAlpha":0.4,' +
                     '"xLambda":1,"iconKeySettings":[{"key":{"dim0":"Volume"},"trailStart":"2013-08-01"},{"key":{"dim0":"ROI"},' +

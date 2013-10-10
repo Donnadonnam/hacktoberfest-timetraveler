@@ -37,3 +37,31 @@ text {
     pointer-events: all;
     cursor: ew-resize;
 }
+
+
+.product-details {
+    margin-top: 1em;
+}
+.circle {
+    position: relative; top: 0.5em;
+    display: inline-block;
+    width: 20px; height: 20px;
+    border-radius: 10px;
+    border-width: 1px;
+    border-style: solid;
+}
+.vol {
+    background-color: #ff0;
+    border-color: #b8b925;
+}
+.roi {
+    background-color: #3d46ff;
+    border-color: #3e45c1;
+}
+.rvv {
+    background-color: #10ff79;
+    border-color: #31b264;
+}
+dd {
+    margin-left: 2em;
+}
