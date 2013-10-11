@@ -10,14 +10,14 @@ import org.joda.time.Interval
 
 class DataService {
     static def RestBuilder rest = new RestBuilder()
-    static Map<Tuple<String, String>, List<RatingOverTimeData>> CACHE = new HashMap<>()
+    static Map<Tuple, List<RatingOverTimeData>> CACHE = new HashMap<>()
 
-    static Collection<Tuple<String, Tuple<Number, Number, Number>, Number>> getRoiData(DataServiceRequestContext ctx) {
+    static Collection<Tuple> getRoiData(DataServiceRequestContext ctx) {
         final temp = getRatingOverTimeData(ctx)
 
-        return new ArrayList<Tuple<String, Tuple<Number, Number, Number>, Number>>() {{
+        return new ArrayList<Tuple>() {{
             for (final datum in temp) {
-                def tuple = new Tuple<String, Tuple<Number, Number, Number>, Number>()
+                def tuple = new Tuple()
                 tuple.set(0, datum.getKey().toString())
                 tuple.set(1, datum.getYearMonthDay())
                 tuple.set(2, datum.getValue())
@@ -30,7 +30,7 @@ class DataService {
         final String clientName = ctx.clientName
         final String productId = ctx.productId
         assert(StringUtils.isNotEmpty(clientName) && StringUtils.isNotEmpty(productId))
-        final cacheKey = new Tuple<String,String>(clientName, productId)
+        final cacheKey = new Tuple(clientName, productId)
 
         if (CACHE.containsKey(cacheKey)) {
             return CACHE.get(clientName)
