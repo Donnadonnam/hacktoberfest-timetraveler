@@ -10,37 +10,44 @@ import org.joda.time.Interval
 
 class DataService {
     static def RestBuilder rest = new RestBuilder()
-    static Map<String, Map<String, List<String>>> CACHE = new HashMap<>()
+    static Map<Tuple<String, String>, List<RatingOverTimeData>> CACHE = new HashMap<>()
 
-    static Map<String, List<String>> getRatingOverTimeData(DataServiceRequestContext ctx) {
+    static Collection<Tuple<String, Tuple<Number, Number, Number>, Number>> getRoiData(DataServiceRequestContext ctx) {
+        final temp = getRatingOverTimeData(ctx)
+
+        return new ArrayList<Tuple<String, Tuple<Number, Number, Number>, Number>>() {{
+            for (final datum in temp) {
+                def tuple = new Tuple<String, Tuple<Number, Number, Number>, Number>()
+                tuple.set(0, datum.getKey().toString())
+                tuple.set(1, datum.getYearMonthDay())
+                tuple.set(2, datum.getValue())
+                add(tuple)
+            }
+        }}
+    }
+
+    static List<RatingOverTimeData> getRatingOverTimeData(DataServiceRequestContext ctx) {
         final String clientName = ctx.clientName
-        assert(StringUtils.isNotEmpty(clientName))
+        final String productId = ctx.productId
+        assert(StringUtils.isNotEmpty(clientName) && StringUtils.isNotEmpty(productId))
+        final cacheKey = new Tuple<String,String>(clientName, productId)
 
-        if (CACHE.containsKey(clientName)) {
+        if (CACHE.containsKey(cacheKey)) {
             return CACHE.get(clientName)
         }
 
         final List<Interval> intervals = get30DayIntervals(ctx)
-        final def productTuples = Constants.getClientProductTuples(clientName)
 
-        final result = new HashMap<String, List<String>>() {{
-            for (final def productTuple : productTuples) {
-                List<String> ratingsOverTime = new ArrayList<String>()
+        final result = new ArrayList<RatingOverTimeData>() {{
+            final volumeTuples = buildVolumeTuples(clientName, productId, intervals)
+            final roiTuples = buildROITuples(clientName, productId, intervals)
 
-                final String productId = productTuple.get(0)
-                final String productName = productTuple.get(1)
-                final volumeTuples = buildVolumeTuples(clientName, productId, intervals)
-                final roiTuples = buildROITuples(clientName, productId, intervals)
-
-                ratingsOverTime.addAll(tuplesToStrings(volumeTuples))
-                ratingsOverTime.addAll(tuplesToStrings(roiTuples))
-                ratingsOverTime.addAll(tuplesToStrings(buildRVVTuples(clientName, productId, intervals, volumeTuples, roiTuples)))
-
-                put(productName, ratingsOverTime)
-            }
+            addAll(volumeTuples)
+            addAll(roiTuples)
+            addAll(buildRVVTuples(clientName, productId, intervals, volumeTuples, roiTuples))
         }}
 
-        CACHE.put(clientName, result)
+        CACHE.put(cacheKey, result)
         return result
     }
 

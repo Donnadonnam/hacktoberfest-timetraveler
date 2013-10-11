@@ -20,7 +20,7 @@ class Constants {
     }}
 
 // LUVEEN TODO get some good sample product IDs to work with!
-    private static Map<String, List<Tuple<String>>> CLIENT_PRODUCT_IDS = new HashMap<String, List<Tuple<String>>>() {{
+    private static Map<String, List<Tuple<String>>> CLIENT_PRODUCT_NAMES = new HashMap<String, List<Tuple<String>>>() {{
 //        put("petsmart", new ArrayList<String>() {{add(""); add(""); add(""); add(""); add(""); add(""); }})
 //        put("Costco", new ArrayList<String>() {{add(""); add(""); add(""); add(""); add(""); add(""); }})
 //        put("HomeDepot", new ArrayList<String>() {{add(""); add(""); add(""); add(""); add(""); add(""); }})
@@ -62,8 +62,8 @@ class Constants {
                 CLIENT_PAGEVIEWS_DATE_FORMAT.format(interval.end))
     }
 
-    public static List<Tuple<String>> getClientProductTuples(String clientName) {
+    public static Map<String, String> getClientProductTuples(String clientName) {
         assert(StringUtils.isNotEmpty(clientName))
-        return CLIENT_PRODUCT_IDS.get(clientName.toLowerCase())
+        return CLIENT_PRODUCT_NAMES.get(clientName.toLowerCase())
     }
 }
