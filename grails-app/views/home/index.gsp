@@ -79,8 +79,6 @@
             var options = {};
             options['showChartButtons'] = false;
             options['showSidePanel'] = false;
-            options['showXMetricPicker'] = false;
-            options['showYMetricPicker'] = false;
             options['state'] = '{"showTrails":true,"uniColorForNonSelected":false,"colorOption":"_UNIQUE_COLOR",' +
                     '"xZoomedIn":false,"playDuration":5000,"sizeOption":"_UNISIZE","xLambda":1,' +
                     '"duration":{"timeUnit":"D","multiplier":1},"xZoomedDataMin":1375315200000,' +
