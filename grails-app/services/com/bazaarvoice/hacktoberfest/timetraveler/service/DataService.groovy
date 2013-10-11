@@ -2,23 +2,31 @@ package com.bazaarvoice.hacktoberfest.timetraveler.service
 
 import com.bazaarvoice.hacktoberfest.timetraveler.controller.DataServiceRequestContext
 import com.bazaarvoice.hacktoberfest.timetraveler.service.util.Constants
-import grails.converters.JSON
 import grails.plugins.rest.client.RestBuilder
+import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang.builder.ToStringBuilder
 import org.apache.commons.lang.math.RandomUtils
 import org.joda.time.DateTime
 import org.joda.time.Interval
 
 class DataService {
     static def RestBuilder rest = new RestBuilder()
+    static Map<String, Map<String, List<String>>> CACHE = new HashMap<>()
 
-    static Map<String, List<RatingOverTimeData>> getRatingOverTimeData(DataServiceRequestContext ctx) {
+    static Map<String, List<String>> getRatingOverTimeData(DataServiceRequestContext ctx) {
         final String clientName = ctx.clientName
-        final def productTuples = Constants.getClientProductTuples(clientName)
-        final List<Interval> intervals = getIntervals(ctx)
+        assert(StringUtils.isNotEmpty(clientName))
 
-        return new HashMap<String, List<RatingOverTimeData>>() {{
+        if (CACHE.containsKey(clientName)) {
+            return CACHE.get(clientName)
+        }
+
+        final List<Interval> intervals = get30DayIntervals(ctx)
+        final def productTuples = Constants.getClientProductTuples(clientName)
+
+        final result = new HashMap<String, List<String>>() {{
             for (final def productTuple : productTuples) {
-                List<RatingOverTimeData> ratingsOverTime = new ArrayList<RatingOverTimeData>()
+                List<String> ratingsOverTime = new ArrayList<String>()
 
                 String productId = productTuple.get(0)
                 String productName = productTuple.get(1)
@@ -28,17 +36,20 @@ class DataService {
                 put(productName, ratingsOverTime)
             }
         }}
+
+        CACHE.put(clientName, result)
+        return result
     }
 
-    static Collection<RatingOverTimeData> buildConversionTuples(String clientName, String productId, final List<Interval> intervals) {
+    static Collection<String> buildConversionTuples(String clientName, String productId, final List<Interval> intervals) {
         // LUVEEN TODO use real transaction data to compute conversion
-        return new ArrayList<RatingOverTimeData>() {{
+        return new ArrayList<String>() {{
             for (def interval : intervals)
             add(new RatingOverTimeData(
                     Metric.RoI,
                     keyFromInterval(interval),
                     RandomUtils.nextInt(4) + 1
-            ))
+            ).toString())
         }}
     }
 
@@ -54,28 +65,43 @@ class DataService {
                 pageviewsJson.each { id, pageview -> pageviews.add(pageview.pageTypes.product.withReviews) }
 
             }*/
-    private static Collection<RatingOverTimeData> buildVolumeTuples(String clientName, String productId, final List<Interval> intervals) {
-        def response = rest.get(Constants.getClientReviewsUrl(clientName, productId))
-        def reviewsJson = JSON.parse(response)
-        System.out.println("reviewsString: " + response.json);
-        System.out.println("reviewsJson: " + reviewsJson);
-        Map<Interval, Integer> volumes = new HashMap<Interval, Integer>() {{
+    private static Collection<String> buildVolumeTuples(String clientName, String productId, final List<Interval> intervals) {
+        Map<Interval, Integer> volumes = new LinkedHashMap<Interval, Integer>() {{
             for (def interval : intervals) {
                 put(interval, 0)
             }
         }}
 
-        reviewsJson.each { id, review -> def d = new DateTime(review.SubmissionTime); def i = new Interval(d, d.plusDays(1)); volumes.put(i, volumes.get(i) + 1) }
-        accumulateVolumes(volumes)
+        /*System.out.println("Keys in volumes map:")
+        for (final k : volumes.keySet()) {
+            System.out.println(k)
+        }*/
 
-        return new ArrayList<RatingOverTimeData>() {{
+        for (def interval : intervals) {
+            def response = rest.get(Constants.getClientReviewsUrl(clientName, productId, interval))
+            def reviewsJson = response?.json?.Results
+
+//            System.out.println("reviewsString: " + response.json);
+//            System.out.println("reviewsJson: " + reviewsJson);
+
+            for (final review in reviewsJson) {
+//                System.out.println(review)
+                final volume = volumes.get(interval)
+//                System.out.println("i: " + interval + ", volume: " + volume)
+                volumes.put(interval, volume + 1)
+            }
+//            reviewsJson.each { id, review -> System.out.println(review); def d = new DateTime(review.SubmissionTime); def i = get30DayIntervalEndingAt(d); volumes.put(i, volumes.get(i) + 1) }
+        }
+//        accumulateVolumes(volumes)
+
+        return new ArrayList<String>() {{
             for (def interval : volumes.keySet()) {
                 def value = volumes.get(interval)
                 add(new RatingOverTimeData(
                         Metric.Volume,
                         keyFromInterval(interval),
                         value
-                ))
+                ).toString())
             }
         }}
     }
@@ -102,23 +128,37 @@ class DataService {
         }
     }
 
-    private static List<Interval> getIntervals(DataServiceRequestContext ctx) {
+    private static List<Interval> get30DayIntervals(DataServiceRequestContext ctx) {
         // LUVEEN TODO actually use ctx?
         return new ArrayList<Interval>() {{
             DateTime end = DateTime.parse("2013-09-30")
             DateTime start = DateTime.parse("2013-09-01")
 
             for (DateTime i = start; i <= end; i = i.plusDays(1)) {
-                add new Interval(i, i.plusDays(1))
+                add get30DayIntervalEndingAt(i)
             }
         }}
     }
 
+    private static Interval get30DayIntervalEndingAt(DateTime i) {
+        DateTime x = getStartOfDay(i)
+        return new Interval(x.minusDays(30), x)
+    }
+
+    private static Interval get30DayIntervalStartingAt(DateTime i) {
+        DateTime x = getStartOfDay(i)
+        return new Interval(x, x.plusDays(30))
+    }
+
+    private static DateTime getStartOfDay(DateTime i) {
+        i.withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0)
+    }
+
     private static keyFromInterval(Interval interval) {
         return new Tuple(
-                interval.start.year().get(),
-                interval.start.monthOfYear().get() - 1,
-                interval.start.dayOfMonth().get())
+                interval.end.year().get(),
+                interval.end.monthOfYear().get() - 1,
+                interval.end.dayOfMonth().get())
     }
 
     // get all reviews on the product
@@ -142,6 +182,16 @@ class RatingOverTimeData {
         this.key = key
         this.yearMonthDay = yearMonthDay
         this.value = value
+    }
+
+    private String yearMonthDayToString()  {
+        final def result = String.valueOf(yearMonthDay.get(0)) + "-" + String.valueOf(yearMonthDay.get(1)) + "-" + String.valueOf(yearMonthDay.get(2))
+        return result
+    }
+
+    @Override
+    String toString() {
+        return "[" + key.toString() + ", " + yearMonthDayToString() + ", " + value + "]"
     }
 }
 

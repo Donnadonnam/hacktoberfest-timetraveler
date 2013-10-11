@@ -16,7 +16,7 @@ class ReviewDataController {
         // groovy_data_type varx = request[request_param_name] as groovy_data_type
         final DataServiceRequestContext ctx = getRequestContext(request)
         final def reviewData = DataService.getRatingOverTimeData(ctx)
-        System.out.println(JsonOutput.toJson(reviewData))
+//        System.out.println(JsonOutput.toJson(reviewData))
         render reviewData as JSON
     }
 

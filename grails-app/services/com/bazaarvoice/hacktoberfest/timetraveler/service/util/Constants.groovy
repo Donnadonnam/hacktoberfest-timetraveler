@@ -33,17 +33,19 @@ class Constants {
 //        put("", "")
     }}
 
-    private static String CLIENT_REVIEWS_URL = "http://reviews.{0}.com/data/reviews.json?apiversion=5.4&passkey={1}&filter=productId:{2}"
+    private static String CLIENT_REVIEWS_URL = "http://api.bazaarvoice.com/data/reviews.json?apiversion=5.4&passkey={0}&filter=productId:{1}&filter=SubmissionTime:gt:{2}&filter=SubmissionTime:lt:{3}"
     private static String CLIENT_PAGEVIEWS_URL = "https://magpie.bazaarvoice.com/api/pageviews/total/clientName/{0}?start_date={1}&end_date={2}&passkey=e7da1235-02e6-4a77-b0f8-a0444f278aab"
     private static SimpleDateFormat CLIENT_PAGEVIEWS_DATE_FORMAT = new SimpleDateFormat("yyyymmdd")
 
-    public static String getClientReviewsUrl(String clientName, String productId) {
+    public static String getClientReviewsUrl(String clientName, String productId, Interval interval) {
         assert(StringUtils.isNotEmpty(clientName))
         final String clientNameLowerCase = clientName.toLowerCase()
+        final String startTimestamp = String.valueOf(interval.getStartMillis() / 1000)
+        final String endTimestamp = String.valueOf(interval.getEndMillis() / 1000)
         assert(CLIENT_DEV_API_KEYS.containsKey(clientNameLowerCase))
 
-        final String result = MessageFormat.format(CLIENT_REVIEWS_URL, clientNameLowerCase, CLIENT_DEV_API_KEYS.get(clientNameLowerCase), productId)
-        System.out.println("clientName: " + clientName + ", productId: " + productId + ", url: " + result)
+        final String result = MessageFormat.format(CLIENT_REVIEWS_URL, CLIENT_DEV_API_KEYS.get(clientNameLowerCase), productId, startTimestamp, endTimestamp)
+//        System.out.println("clientName: " + clientName + ", productId: " + productId + ", url: " + result)
 
         return result
     }
