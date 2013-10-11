@@ -4,7 +4,6 @@ import com.bazaarvoice.hacktoberfest.timetraveler.controller.DataServiceRequestC
 import com.bazaarvoice.hacktoberfest.timetraveler.service.util.Constants
 import grails.plugins.rest.client.RestBuilder
 import org.apache.commons.lang.StringUtils
-import org.apache.commons.lang.builder.ToStringBuilder
 import org.apache.commons.lang.math.RandomUtils
 import org.joda.time.DateTime
 import org.joda.time.Interval
@@ -28,10 +27,14 @@ class DataService {
             for (final def productTuple : productTuples) {
                 List<String> ratingsOverTime = new ArrayList<String>()
 
-                String productId = productTuple.get(0)
-                String productName = productTuple.get(1)
-                ratingsOverTime.addAll(buildVolumeTuples(clientName, productId, intervals))
-                ratingsOverTime.addAll(buildConversionTuples(clientName, productId, intervals))
+                final String productId = productTuple.get(0)
+                final String productName = productTuple.get(1)
+                final volumeTuples = buildVolumeTuples(clientName, productId, intervals)
+                final roiTuples = buildROITuples(clientName, productId, intervals)
+
+                ratingsOverTime.addAll(tuplesToStrings(volumeTuples))
+                ratingsOverTime.addAll(tuplesToStrings(roiTuples))
+                ratingsOverTime.addAll(tuplesToStrings(buildRVVTuples(clientName, productId, intervals, volumeTuples, roiTuples)))
 
                 put(productName, ratingsOverTime)
             }
@@ -41,31 +44,14 @@ class DataService {
         return result
     }
 
-    static Collection<String> buildConversionTuples(String clientName, String productId, final List<Interval> intervals) {
-        // LUVEEN TODO use real transaction data to compute conversion
+    static List<String> tuplesToStrings(Collection<RatingOverTimeData> data) {
         return new ArrayList<String>() {{
-            for (def interval : intervals)
-            add(new RatingOverTimeData(
-                    Metric.RoI,
-                    keyFromInterval(interval),
-                    RandomUtils.nextInt(4) + 1
-            ).toString())
+            for (def datum : data)
+                add(datum.toString())
         }}
     }
 
-    /*for (def productId : productIds) {
-                String reviewsString = rest.get(Constants.getClientReviewsUrl(clientName, productId))
-                String pageviewsString = rest.get(Constants.getClientPageviewsUrl(clientName, ))
-                JSONObject reviewsJson = JSON.parse(reviewsString)
-                JSONObject pageviewsJson = JSON.parse(pageviewsString)
-                List<Review> reviews = new ArrayList<Review>()
-                List<Review> pageviews = new ArrayList<Pageview>()
-
-                reviewsJson.each { id, review -> reviews.add(review.Rating) }
-                pageviewsJson.each { id, pageview -> pageviews.add(pageview.pageTypes.product.withReviews) }
-
-            }*/
-    private static Collection<String> buildVolumeTuples(String clientName, String productId, final List<Interval> intervals) {
+    private static Collection<RatingOverTimeData> buildVolumeTuples(String clientName, String productId, final List<Interval> intervals) {
         Map<Interval, Integer> volumes = new LinkedHashMap<Interval, Integer>() {{
             for (def interval : intervals) {
                 put(interval, 0)
@@ -94,19 +80,74 @@ class DataService {
         }
 //        accumulateVolumes(volumes)
 
-        return new ArrayList<String>() {{
+        return new ArrayList<RatingOverTimeData>() {{
             for (def interval : volumes.keySet()) {
                 def value = volumes.get(interval)
                 add(new RatingOverTimeData(
                         Metric.Volume,
                         keyFromInterval(interval),
                         value
-                ).toString())
+                ))
             }
         }}
     }
 
-    private static void accumulateVolumes(HashMap volumes) {
+    static Collection<RatingOverTimeData> buildROITuples(String clientName, String productId, final List<Interval> intervals) {
+        // LUVEEN TODO use real transaction data to compute conversion
+        return new ArrayList<RatingOverTimeData>() {{
+            for (def interval : intervals)
+            add(new RatingOverTimeData(
+                    Metric.RoI,
+                    keyFromInterval(interval),
+                    RandomUtils.nextInt(4) + 1
+            ))
+        }}
+    }
+
+    static Collection<RatingOverTimeData> buildRVVTuples(String clientName, String productId, final List<Interval> intervals, Collection<RatingOverTimeData> volumeTuples, Collection<RatingOverTimeData> roiTuples) {
+        return new ArrayList<RatingOverTimeData>() {{
+            def volIt = volumeTuples.iterator()
+            def roiIt = roiTuples.iterator()
+            def intIt = intervals.iterator()
+
+            def prevRoiTuple = null
+            def prevVolumeTuple = null
+            def prevInterval = null
+
+            while (roiIt.hasNext() && volIt.hasNext() && intIt.hasNext()) {
+                final RatingOverTimeData roiTuple = roiIt.next()
+                final RatingOverTimeData volumeTuple = volIt.next()
+                final Interval interval = intIt.next()
+
+                add(new RatingOverTimeData(
+                        Metric.RvV,
+                        keyFromInterval(interval),
+                        calculateRvvFor(prevInterval, prevVolumeTuple, prevRoiTuple, interval, volumeTuple, roiTuple)
+                ))
+
+                prevVolumeTuple = volumeTuple
+                prevRoiTuple = roiTuple
+                prevInterval = interval
+            }
+        }
+
+            Number calculateRvvFor(Interval prevInterval, RatingOverTimeData prevVolumeTuple, RatingOverTimeData prevRoiTuple, Interval interval, RatingOverTimeData volumeTuple, RatingOverTimeData roiTuple) {
+                Number term1
+                Number term2
+
+                if (prevVolumeTuple == null || prevRoiTuple == null || prevInterval == null) {
+                    return 0
+                }
+
+                term1 = (roiTuple.value - prevRoiTuple.value) / 100
+                term2 = (volumeTuple.value - prevVolumeTuple.value) / 100
+
+                return term1 - term2
+            }
+        }
+    }
+
+    /*private static void accumulateVolumes(HashMap volumes) {
         List<Interval> aggregatedIntervals = new ArrayList<Interval>()
 
         aggregatedIntervals.addAll(volumes.keySet())
@@ -126,7 +167,7 @@ class DataService {
                 volumes.put(i, total)
             }
         }
-    }
+    }*/
 
     private static List<Interval> get30DayIntervals(DataServiceRequestContext ctx) {
         // LUVEEN TODO actually use ctx?
@@ -185,7 +226,7 @@ class RatingOverTimeData {
     }
 
     private String yearMonthDayToString()  {
-        final def result = String.valueOf(yearMonthDay.get(0)) + "-" + String.valueOf(yearMonthDay.get(1)) + "-" + String.valueOf(yearMonthDay.get(2))
+        final result = "new Date(" + String.valueOf(yearMonthDay.get(0)) + "," + String.valueOf(yearMonthDay.get(1)) + "," + String.valueOf(yearMonthDay.get(2)) + ")"
         return result
     }
 
@@ -197,7 +238,7 @@ class RatingOverTimeData {
 
 enum Metric {
     RoI("RoI"),
-//    RvV("RvV"),
+    RvV("RvV"),
     Volume("Vol")
 
     private String label

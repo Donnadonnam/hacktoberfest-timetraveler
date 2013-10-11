@@ -28,7 +28,7 @@ class Constants {
 //        put("PetSmart", new ArrayList<String>() {{add(""); add(""); add(""); add(""); add(""); add(""); }})
 //        put("Walmart", new ArrayList<String>() {{add(""); add(""); add(""); add(""); add(""); add(""); }})
 //        put("Walmart", new ArrayList<String>() {{add(""); add(""); add(""); add(""); add(""); add(""); }})
-        put("verizon", new ArrayList<Tuple<String>>() {{ add(new Tuple("5971", "Apple iPhone 5 - 16GB in Black"))/*; add("5845")*/ }})
+        put("verizon", new ArrayList<Tuple<String>>() {{ add(new Tuple("5947", "Motorola DROID RAZR M")); add(new Tuple("5954", "LG Spectrum 2")); }})
 //        put("bestbuy", new ArrayList<String>() {{add("3049133"); add("1318913"); add("1318986"); }})
 //        put("", "")
     }}

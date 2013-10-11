@@ -2,7 +2,6 @@ package com.bazaarvoice.hacktoberfest.timetraveler.controller
 
 import com.bazaarvoice.hacktoberfest.timetraveler.service.DataService
 import grails.converters.JSON
-import groovy.json.JsonOutput
 
 import javax.servlet.http.HttpServletRequest
 
