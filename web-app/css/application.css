@@ -39,6 +39,9 @@ text {
 }
 
 
+.row-fluid {
+    margin-bottom: 5em;
+}
 .product-details {
     margin-top: 1em;
 }
@@ -46,7 +49,7 @@ text {
     position: relative; top: 0.5em;
     display: inline-block;
     width: 20px; height: 20px;
-    border-radius: 10px;
+    border-radius: 11px;
     border-width: 1px;
     border-style: solid;
 }

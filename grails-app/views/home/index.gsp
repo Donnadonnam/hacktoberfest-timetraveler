@@ -7,64 +7,67 @@
 </head>
 <body>
     <h1>Time Traveler</h1>
+    <hr/>
     <div class="container">
 
         <%-- Verizon product external ID 5947 --%>
         <div class="product_5947 row-fluid">
-            <div class="product-details span4">
+            <div class="product-details span2">
                 <div class="product-image ">
                     <r:img dir="images" file="5947.jpg" width="198" height="400" alt="${g.message(code:'product.name.5947')}"/>
                 </div>
                 <h4 class="product-name"><g:message code="product.name.5947"/></h4>
-                <dl class="legend">
-                    <dt>
-                        <span class="circle vol"></span>
-                        <g:message code="legend.vol.dt"/>
-                    </dt>
-                    <dd><g:message code="legend.vol.dd"/></dd>
-                    <dt>
-                        <span class="circle roi"></span>
-                        <g:message code="legend.roi.dt"/>
-                    </dt>
-                    <dd><g:message code="legend.roi.dd"/></dd>
-                    <dt>
-                        <span class="circle rvv"></span>
-                        <g:message code="legend.rvv.dt"/>
-                    </dt>
-                    <dd><g:message code="legend.rvv.dd"/></dd>
-                </dl>
             </div>
 
             <div id="chart_5947" class="span8"></div>
-        </div>
+
+            <dl class="legend span2">
+                <dt>
+                    <span class="circle roi"></span>
+                    <g:message code="legend.roi.dt"/>
+                </dt>
+                <dd><g:message code="legend.roi.dd"/></dd>
+                <dt>
+                    <span class="circle vol"></span>
+                    <g:message code="legend.vol.dt"/>
+                </dt>
+                <dd><g:message code="legend.vol.dd"/></dd>
+                <dt>
+                    <span class="circle rvv"></span>
+                    <g:message code="legend.rvv.dt"/>
+                </dt>
+                <dd><g:message code="legend.rvv.dd"/></dd>
+            </dl>
+    </div>
 
         <%-- Verizon product external ID 5954 --%>
         <div class="product_5954 row-fluid">
-            <div class="product-details span4">
+            <div class="product-details span2">
                 <div class="product-image ">
                     <r:img dir="images" file="5954.png" width="171" height="338" alt="${g.message(code:'product.name.5954')}"/>
                 </div>
                 <h4 class="product-name"><g:message code="product.name.5954"/></h4>
-                <dl class="legend">
-                    <dt>
-                        <span class="circle vol"></span>
-                        <g:message code="legend.vol.dt"/>
-                    </dt>
-                    <dd><g:message code="legend.vol.dd"/></dd>
-                    <dt>
-                        <span class="circle roi"></span>
-                        <g:message code="legend.roi.dt"/>
-                    </dt>
-                    <dd><g:message code="legend.roi.dd"/></dd>
-                    <dt>
-                        <span class="circle rvv"></span>
-                        <g:message code="legend.rvv.dt"/>
-                    </dt>
-                    <dd><g:message code="legend.rvv.dd"/></dd>
-                </dl>
             </div>
 
             <div id="chart_5954" class="span8"></div>
+
+            <dl class="legend span2">
+                <dt>
+                    <span class="circle roi"></span>
+                    <g:message code="legend.roi.dt"/>
+                </dt>
+                <dd><g:message code="legend.roi.dd"/></dd>
+                <dt>
+                    <span class="circle vol"></span>
+                    <g:message code="legend.vol.dt"/>
+                </dt>
+                <dd><g:message code="legend.vol.dd"/></dd>
+                <dt>
+                    <span class="circle rvv"></span>
+                    <g:message code="legend.rvv.dt"/>
+                </dt>
+                <dd><g:message code="legend.rvv.dd"/></dd>
+            </dl>
         </div>
 
     </div>
@@ -79,15 +82,14 @@
             options['showXMetricPicker'] = false;
             options['showYMetricPicker'] = false;
             options['state'] = '{"showTrails":true,"uniColorForNonSelected":false,"colorOption":"_UNIQUE_COLOR",' +
-                    '"xZoomedIn":false,"time":"2013-09-25","playDuration":5000,"sizeOption":"_UNISIZE",' +
+                    '"xZoomedIn":false,"playDuration":5000,"sizeOption":"_UNISIZE","xLambda":1,' +
                     '"duration":{"timeUnit":"D","multiplier":1},"xZoomedDataMin":1375315200000,' +
                     '"orderedByY":false,"xZoomedDataMax":1375401600000,"iconType":"BUBBLE","nonSelectedAlpha":0.4,' +
-                    '"xLambda":1,"iconKeySettings":[{"key":{"dim0":"Volume"},"trailStart":"2013-08-01"},{"key":{"dim0":"ROI"},' +
-                    '"trailStart":"2013-08-01"},{"key":{"dim0":"RvV"},"trailStart":"2013-08-01"}],"yZoomedIn":false,' +
-                    '"yZoomedDataMax":2,"dimensions":{"iconDimensions":["dim0"]},"xAxisOption":"_TIME",' +
+                    '"iconKeySettings":[{"key":{"dim0":"ROI"},"trailStart":"2013-09-25"},{"key":{"dim0":"Volume"},"trailStart":"2013-09-25"},{"key":{"dim0":"RvV"},"trailStart":"2013-09-25"}],' +
+                    '"yZoomedIn":false,"yZoomedDataMax":2,"dimensions":{"iconDimensions":["dim0"]},"xAxisOption":"_TIME",' +
                     '"yZoomedDataMin":-1,"orderedByX":false,"yLambda":1,"yAxisOption":"2"}';
-            options['width'] = 800;
-            options['height'] = 600;
+            options['width'] = 700;
+            options['height'] = 400;
 
             var data_5947 = new google.visualization.DataTable();
             data_5947.addColumn('string', 'Metric');
