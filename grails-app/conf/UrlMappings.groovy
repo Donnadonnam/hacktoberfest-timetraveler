@@ -8,6 +8,7 @@ class UrlMappings {
 		}
 
 		"/"(controller: 'home', action: 'index')
+        "/roi"(controller: 'reviewData', action: 'index')
 		"500"(view:'/error')
 	}
 }
