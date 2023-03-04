@@ -1,18 +1,1 @@
-# Numerous always-ignore extensions
-# *.err
-# *.log
-# *.swo
-# *.vi
-# *.sass-cache
-# *.md.html
-
-# OS or Editor folders
-# .cache
-# .settings
-# nbproject
-# 
-# Folders to ignore
-# .svn
-# intermediate
-# target
-# out
+#  
